@@ -1,5 +1,8 @@
+from tkinter import Button
 import pygame
 import random
+
+pygame.init()
 
 # Colors
 WHITE= (255,255,255)
@@ -52,7 +55,6 @@ def main():
     clock = pygame.time.Clock()
     position= (100,100)
 
-
     run = True 
     while run:
         clock.tick(60)
@@ -60,18 +62,10 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-               # mouse_pressed = pygame.key.get_pressed()
-               # if mouse_pressed:
-                    position = pygame.mouse.get_pos()
-        
-        
-        
+               
+        position = pygame.mouse.get_pos()
+       
         draw_board(position)
-
-
-
 
 if __name__=="__main__":
     main()
