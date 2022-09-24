@@ -5,7 +5,7 @@ import random
 
 class Grid_Row():
     def __init__(self):
-        self.fields = [COLORS[0],COLORS[0],COLORS[0],COLORS[0]]
+        self.fields = [COLORS[1],COLORS[1],COLORS[1],COLORS[1]]
         self.feedback = (0,0,0,0)
 
     def change_field_color(self, fieldnr, color):
@@ -13,6 +13,12 @@ class Grid_Row():
 
     def return_color(self, field_nr):
         return self.fields[field_nr]
+
+    def draw(self, SCREEN, row):
+        for i in range(4):
+            peg = pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
+            pygame.draw.rect(SCREEN, self.return_color(i), peg)
+
 
 
 # Colors
@@ -27,11 +33,7 @@ YELLOW = (255,255,0)
 COLORS = [BLACK, RED, GREEN, BLUE, PURPLE, YELLOW]
 
 # Global variables
-PEG_SIZE = (30,30)
-
-
-
-
+PEG_SIZE = (40,40)
 
 
 # Functions ::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -65,9 +67,11 @@ def main():
     board = game_setup()
     solution = solution_setup()        
 
-    for i in range(4):
-        peg = pygame.Rect((10 + PEG_SIZE[0]*i, 10), PEG_SIZE )
-        pygame.draw.rect(SCREEN, solution.return_color(i), peg)
+    board[4].change_field_color(2, GREEN)
+    board[7].change_field_color(1, PURPLE)
+
+    for i in range(10):
+        board[i].draw(SCREEN, i)
 
     
    
