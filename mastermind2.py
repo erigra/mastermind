@@ -1,9 +1,7 @@
-from dataclasses import Field
-from tkinter import Button
 import pygame
 import random
 
-pygame.init()
+
 
 class Grid_Row():
     def __init__(self):
@@ -28,39 +26,61 @@ YELLOW = (255,255,0)
 
 COLORS = [BLACK, RED, GREEN, BLUE, PURPLE, YELLOW]
 
+# Global variables
+PEG_SIZE = (30,30)
 
-# Screen setup
-WIDTH, HEIGHT = 400, 800
-SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Mastermind")
+
+
+
+
 
 # Functions ::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-# Main program starts here :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-def main():
-    clock = pygame.time.Clock()   
-    run = True 
-
+def game_setup():
     # Board setup
     board = []
     for i in range(10):
         grid_row = Grid_Row()
         board.append(grid_row)
+    return board
     
-    # Solution setup
+def solution_setup():
     solution = Grid_Row()
-    for i in range(3):
+    for i in range(4):
         solution.change_field_color(i, COLORS[random.randint(1,5)])
+    return solution
 
-    print (solution.fields)
 
+# Main program starts here :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+def main():
+    pygame.init()
+
+    # Screen setup
+    WIDTH, HEIGHT = 400, 800
+    SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Mastermind")
+    clock = pygame.time.Clock()   
+     
+
+    board = game_setup()
+    solution = solution_setup()        
+
+    for i in range(4):
+        peg = pygame.Rect((10 + PEG_SIZE[0]*i, 10), PEG_SIZE )
+        pygame.draw.rect(SCREEN, solution.return_color(i), peg)
+
+    
+   
+    run = True
     while run:
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                pygame.quit()
-                      
+                pygame.quit()       
+        
+        pygame.display.flip() 
+
 
 if __name__=="__main__":
     main()
