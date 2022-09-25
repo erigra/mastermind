@@ -165,8 +165,6 @@ def main():
     solution = solution_setup()        
 
     run = True
-    
-
     while run:
         clock.tick(60)
         for event in pygame.event.get():
@@ -177,18 +175,15 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     check_row_fields(current_row, board, solution)
-                    current_row += 1
-                    
+                    current_row += 1                   
 
-            # Legge inn her at dersom an trykker ENTER så sjekkes current_row mot løsning, 
-            #  man får tilbakemeldin og current row avanseres med en
+                    # Legge inn her at dersom an trykker ENTER så sjekkes current_row mot løsning, 
+                    #  man får tilbakemeldin og current row avanseres med en
 
 
         # Setter opp brettet
         draw_board_state(SCREEN, board)
         
-        
-
         # Setter hvit ramme rundt current_row og fjerner på forrige
         board[current_row].has_border = True            
         if current_row > 0:                             
@@ -197,7 +192,7 @@ def main():
 
         check_click(current_row, board[current_row])
 
-
+        # For testing, viser løsningen
         draw_solution(SCREEN, solution)
 
 
