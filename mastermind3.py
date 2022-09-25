@@ -1,8 +1,10 @@
+from pickle import GLOBAL
+from tkinter.tix import INTEGER
 import pygame
 import random
 
 # Things to do/figure out
-# Find excact position of rects  (manually or? ) ,
+# 
 
 
 
@@ -35,6 +37,9 @@ class Grid_Row():
 
 
 
+
+
+
 # Colors
 BOARD_BG= (139,69,19) # Brown board background
 BOARD_PEGHOLES= (102,51,0)   # Darker brown for unused pegholes
@@ -57,6 +62,8 @@ PEG_SIZE = (40,40)
 
 # Screen størrelse
 WIDTH, HEIGHT = 400, 800
+
+
  
 
 # Functions ::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -92,7 +99,14 @@ def draw_solution(SCREEN, solution):
             pygame.draw.rect(SCREEN, solution.return_color(i), solution_peg, width = 0, border_radius=15)
 
 
-    
+def check_click(row):
+    pegs= [0,0,0,0]
+    for i in range(4):
+        pegs[i]= pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
+        mouse_pos = pygame.mouse.get_pos()
+        if pegs[i].collidepoint(mouse_pos):
+            print(f"treff! {i}")
+
 
 
 
@@ -104,27 +118,40 @@ def main():
     pygame.display.set_caption("Mastermind")
     clock = pygame.time.Clock()
   
-     
+    # Den raden som spilleren er på
+    current_row = 0
 
     board = game_setup()
     solution = solution_setup()        
 
     run = True
     
+
     while run:
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                pygame.quit()       
-        
-    
+                pygame.quit()  
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    current_row += 1
+
+            # Legge inn her at dersom an trykker ENTER så sjekkes current_row mot løsning, 
+            #  man får tilbakemeldin og current row avanseres med en
 
 
 
         draw_board_state(SCREEN, board)
-        draw_solution(SCREEN, solution)
+        
+        check_click(current_row)
+
+        # Setter hvit ramme rundt current_row og fjerner på forrige
+        board[current_row].has_border = True            
+        if current_row > 0:                             
+            board[current_row-1].has_border = False
+        board[current_row].draw(SCREEN, current_row)    
 
         pygame.display.flip() 
 
