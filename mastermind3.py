@@ -11,9 +11,10 @@ import time
 class Grid_Row():
     def __init__(self):
         self.fields = [COLORS[1],COLORS[1],COLORS[1],COLORS[1]]
-        self.feedback = (0,0,0,0)
+        self.feedback = []
         self.has_border= False
         self.fill = False
+        self.counted = [False, False, False, False]
 
     def change_field_color(self, fieldnr, color):
         self.fields[fieldnr] = color
@@ -106,17 +107,30 @@ def check_click(row, board):
                 new_color_index = 2
             board.change_field_color(i, COLORS[new_color_index])
             board.fill = True
-            time.sleep(0.1)
+            time.sleep(0.2)
 
 
 def check_row_fields(row, board, solution):
+    
+    solution_colors = []                                                # Lager en list med solution sine farger
     for i in range(4):
-        if board[row].return_color(i) == solution.return_color(i):
-            board[row].feedback[i] = 3
-        
-        
-        
-        print (board[row].feedback)
+        solution_colors.append(solution.return_color(i))
+
+                                         
+    for i in range(4):
+        if board[row].return_color(i) == solution.return_color(i):      # Rett farge og plass, fjerner pegs som matcher både i løsning og svar
+            board[row].feedback.append(1)
+            solution_colors.remove(solution.return_color(i))
+            board[row].remove(board.return_color(i)) 
+    
+    for i in range(len(board)):                                         # Sjekker rett farge feil plass for gjenværende pegs
+        if board[row].return_color(i) in solution_colors:
+            board[row].feedback.append(2)
+            
+                
+    # For testing
+    
+    print (board[row].feedback)
 
 
 
@@ -146,7 +160,7 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    check_row_fields(current_row, board)
+                    check_row_fields(current_row, board, solution)
                     current_row += 1
                     
 
@@ -168,8 +182,8 @@ def main():
         check_click(current_row, board[current_row])
 
 
-        for i in range(4):
-            
+        draw_solution(SCREEN, solution)
+
 
         # Oppdaterer skjermen
         pygame.display.flip() 
