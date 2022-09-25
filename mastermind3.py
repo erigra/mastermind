@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 
 # Things to do/figure out
 # 
@@ -32,10 +33,6 @@ class Grid_Row():
         if self.has_border:
             border= pygame.Rect(10,(60*row)+10,240,60)
             pygame.draw.rect(SCREEN, WHITE, border, width = 1)
-
-
-
-
 
 
 # Colors
@@ -97,14 +94,29 @@ def draw_solution(SCREEN, solution):
             pygame.draw.rect(SCREEN, solution.return_color(i), solution_peg, width = 0, border_radius=15)
 
 
-def check_click(row):
+def check_click(row, board):
     pegs= [0,0,0,0]
     for i in range(4):
         pegs[i]= pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
         mouse_pos = pygame.mouse.get_pos()
-        if pegs[i].collidepoint(mouse_pos):
-            print(f"treff! {i}")
+        if pegs[i].collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
+            old_color = board.return_color(i)
+            new_color_index = COLORS.index(old_color)+1 
+            if new_color_index in [0,1,9]:
+                new_color_index = 2
+            board.change_field_color(i, COLORS[new_color_index])
+            board.fill = True
+            time.sleep(0.1)
 
+
+def check_row_fields(row, board, solution):
+    for i in range(4):
+        if board[row].return_color(i) == solution.return_color(i):
+            board[row].feedback[i] = 3
+        
+        
+        
+        print (board[row].feedback)
 
 
 
@@ -134,16 +146,18 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
+                    check_row_fields(current_row, board)
                     current_row += 1
+                    
 
             # Legge inn her at dersom an trykker ENTER så sjekkes current_row mot løsning, 
             #  man får tilbakemeldin og current row avanseres med en
 
 
-
+        # Setter opp brettet
         draw_board_state(SCREEN, board)
         
-        check_click(current_row)
+        
 
         # Setter hvit ramme rundt current_row og fjerner på forrige
         board[current_row].has_border = True            
@@ -151,6 +165,13 @@ def main():
             board[current_row-1].has_border = False
         board[current_row].draw(SCREEN, current_row)    
 
+        check_click(current_row, board[current_row])
+
+
+        for i in range(4):
+            
+
+        # Oppdaterer skjermen
         pygame.display.flip() 
 
 
