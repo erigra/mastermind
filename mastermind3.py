@@ -1,3 +1,4 @@
+from ast import While
 import pygame
 import random
 import time
@@ -112,24 +113,39 @@ def check_click(row, board):
 
 def check_row_fields(row, board, solution):
     
-    solution_colors = []                                                # Lager en list med solution sine farger
+    solution_colors = []                                                # Lager en liste med solution sine farger
     for i in range(4):
         solution_colors.append(solution.return_color(i))
+
+    answer_colors = []                                                  # Lager en liste med aktuell rekke sine farger
+    for i in range(4):
+        answer_colors.append(board[row].return_color(i))
 
                                          
     for i in range(4):
         if board[row].return_color(i) == solution.return_color(i):      # Rett farge og plass, fjerner pegs som matcher både i løsning og svar
             board[row].feedback.append(1)
             solution_colors.remove(solution.return_color(i))
-            board[row].remove(board.return_color(i)) 
+            answer_colors.remove(board[row].return_color(i)) 
     
-    for i in range(len(board)):                                         # Sjekker rett farge feil plass for gjenværende pegs
-        if board[row].return_color(i) in solution_colors:
-            board[row].feedback.append(2)
+    
+    i=0
+    while len(solution_colors)>0 and len(answer_colors)>0:             # Ret farge, feil plass, fjerner pegs i begge lister, rekursiv sjekk
+        for n in range(len(solution_colors)):
+            if answer_colors[i] == solution_colors[n]:
+                answer_colors.remove(answer_colors[i])
+                solution_colors.remove(solution_colors[n])
+                board[row].feedback.append(2)
+                i +=1    
+                continue   
             
-                
+        break
+       
+        
+
     # For testing
-    
+    print (f"Answers: {answer_colors}")
+    print (f" SOL: {solution_colors}")
     print (board[row].feedback)
 
 
