@@ -128,18 +128,29 @@ def check_row_fields(row, board, solution):
             solution_colors.remove(solution.return_color(i))
             answer_colors.remove(board[row].return_color(i)) 
     
-    
-    i=0
-    while len(solution_colors)>0 and len(answer_colors)>0:             # Ret farge, feil plass, fjerner pegs i begge lister, rekursiv sjekk
-        for n in range(len(solution_colors)):
-            if answer_colors[i] == solution_colors[n]:
-                answer_colors.remove(answer_colors[i])
-                solution_colors.remove(solution_colors[n])
-                board[row].feedback.append(2)
-                i +=1    
-                continue   
-            
-        break
+    white_pegs = 0
+    checked_colors = []
+    for color in answer_colors:
+        if color in solution_colors and color not in checked_colors:
+            num_answer = answer_colors.count(color)       # Number of times color is used in answer
+            num_solution = solution_colors.count(color)   # Number of times color is used in solution
+            white_pegs += min(num_answer, num_solution)
+        checked_colors.append(color)
+    print(f"White pegs: {white_pegs}")
+    for _ in range(white_pegs):
+        board[row].feedback.append(2)
+
+    # i=0
+    # while len(solution_colors)>0 and len(answer_colors)>0:             # Ret farge, feil plass, fjerner pegs i begge lister, rekursiv sjekk
+    #     for n in range(len(solution_colors)):
+    #         if answer_colors[i] == solution_colors[n]:
+    #             answer_colors.remove(answer_colors[i])
+    #             solution_colors.remove(solution_colors[n])
+    #             board[row].feedback.append(2)
+    #             i +=1
+    #             continue
+    #
+    #     break
        
         
 
