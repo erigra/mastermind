@@ -1,5 +1,3 @@
-from pickle import GLOBAL
-from tkinter.tix import INTEGER
 import pygame
 import random
 
