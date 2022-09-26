@@ -32,9 +32,23 @@ class Grid_Row():
                 peg = pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
                 pygame.draw.rect(SCREEN, self.return_color(i), peg, width = 2, border_radius=15)
         
+        for i in range(len(self.feedback)):
+            if self.feedback[i] == 1:
+                feedback_peg = pygame.Rect((250+(20*i), row*60+20), FEEDBACK_PEG_SIZE)
+                pygame.draw.rect(SCREEN, BLACK, feedback_peg, border_radius=10)
+            if self.feedback[i] == 2:
+                feedback_peg = pygame.Rect((250+(20*i), row*60+20),FEEDBACK_PEG_SIZE)
+                pygame.draw.rect(SCREEN, WHITE, feedback_peg, border_radius=10)
+
         if self.has_border:
             border= pygame.Rect(10,(60*row)+10,240,60)
             pygame.draw.rect(SCREEN, WHITE, border, width = 1)
+
+
+
+
+
+
 
 
 # Colors
@@ -139,20 +153,6 @@ def check_row_fields(row, board, solution):
         checked_colors.append(color)
     for _ in range(white_pegs):
         board[row].feedback.append(2)
-
-    # For testing
-    print (f"Answers: {answer_colors}")
-    print (f" SOL: {solution_colors}")
-    print (board[row].feedback)
-
-def draw_feedback(SCREEN, feedback, current_row):                  
-    for i in range(len(feedback)):
-        if feedback[i] == 1:
-            feedback_peg = pygame.Rect((250+(20*i), current_row*60+20), FEEDBACK_PEG_SIZE)
-            pygame.draw.rect(SCREEN, BLACK, feedback_peg, border_radius=10)
-        if feedback[i] == 2:
-            feedback_peg = pygame.Rect((250+(20*i), current_row*60+20),FEEDBACK_PEG_SIZE)
-            pygame.draw.rect(SCREEN, WHITE, feedback_peg, border_radius=10)
         
 
 
@@ -169,6 +169,9 @@ def main():
     board = game_setup()
     solution = solution_setup()        
 
+
+
+    feedback= []
     run = True
     while run:
         clock.tick(60)
@@ -179,13 +182,13 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    check_row_fields(current_row, board, solution)                                    
-                    
+                    check_row_fields(current_row, board, solution)                                   
                     current_row += 1 
+        
 
         # Setter opp brettet
         draw_board_state(SCREEN, board)
-        
+
         # Setter hvit ramme rundt current_row og fjerner på forrige
         board[current_row].has_border = True            
         if current_row > 0:                             
@@ -198,7 +201,7 @@ def main():
         draw_solution(SCREEN, solution)
         
         
-        draw_feedback(SCREEN, board[current_row-1].feedback, current_row)
+        
         # Oppdaterer skjermen
         pygame.display.flip() 
 
