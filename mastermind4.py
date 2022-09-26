@@ -17,8 +17,8 @@ class Grid_Row():
     def return_color(self, field_nr):
         return self.fields[field_nr]
 
-    def draw(self, SCREEN, row):
-        for i in range(4):
+    def draw(self, SCREEN, row):         
+        for i in range(4):                              # Tegner opp pegs
             if self.fill:
                 peg = pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
                 pygame.draw.rect(SCREEN, self.return_color(i), peg, width = 0, border_radius=15)
@@ -26,15 +26,15 @@ class Grid_Row():
                 peg = pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
                 pygame.draw.rect(SCREEN, self.return_color(i), peg, width = 2, border_radius=15)
         
-        for i in range(len(self.feedback)):
+        for i in range(len(self.feedback)):             # Tegner opp fedback pegs basert på om den finnes
             if self.feedback[i] == 1:
-                feedback_peg = pygame.Rect((250+(20*i), row*60+20), FEEDBACK_PEG_SIZE)
+                feedback_peg = pygame.Rect((275+(30*i), row*60+30), FEEDBACK_PEG_SIZE)
                 pygame.draw.rect(SCREEN, BLACK, feedback_peg, border_radius=10)
             if self.feedback[i] == 2:
-                feedback_peg = pygame.Rect((250+(20*i), row*60+20),FEEDBACK_PEG_SIZE)
+                feedback_peg = pygame.Rect((275+(30*i), row*60+30), FEEDBACK_PEG_SIZE)
                 pygame.draw.rect(SCREEN, WHITE, feedback_peg, border_radius=10)
 
-        if self.has_border:
+        if self.has_border:                             # Tegner opp hvit ramme rundt current_row
             border= pygame.Rect(10,(60*row)+10,240,60)
             pygame.draw.rect(SCREEN, WHITE, border, width = 1)
 
@@ -107,7 +107,7 @@ def check_click(row, board):
             board.fill = True
             time.sleep(0.2)
 
-
+# Sjekker spillerens forslag opp imot løsningen
 def check_row_fields(row, board, solution):
     
     solution_colors = []                                                # Lager en liste med solution sine farger
@@ -125,7 +125,7 @@ def check_row_fields(row, board, solution):
             solution_colors.remove(solution.return_color(i))
             answer_colors.remove(board[row].return_color(i)) 
     
-    white_pegs = 0
+    white_pegs = 0                                         # Arne magic again! Rett farge men feil plass på gjenværende pegs
     checked_colors = []
     for color in answer_colors:
         if color in solution_colors and color not in checked_colors:
@@ -135,8 +135,14 @@ def check_row_fields(row, board, solution):
         checked_colors.append(color)
     for _ in range(white_pegs):
         board[row].feedback.append(2)
-        
 
+    if board[row].feedback == [1,1,1,1]:
+        win() 
+       
+
+def win():
+    print("You made it")
+    
 
 # Main program starts here :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 def main():
@@ -150,10 +156,7 @@ def main():
 
     board = game_setup()
     solution = solution_setup()        
-
-
-
-    feedback= []
+    
     run = True
     while run:
         clock.tick(60)
@@ -166,7 +169,6 @@ def main():
                 if event.key == pygame.K_RETURN:
                     check_row_fields(current_row, board, solution)                                   
                     current_row += 1 
-        
 
         # Setter opp brettet
         draw_board_state(SCREEN, board)
@@ -180,6 +182,7 @@ def main():
         check_click(current_row, board[current_row])
 
         # For testing, viser løsningen
+        
         draw_solution(SCREEN, solution)
         
         
