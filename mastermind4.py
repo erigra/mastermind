@@ -20,22 +20,22 @@ class Grid_Row():
     def draw(self, SCREEN, row):         
         for i in range(4):                              # Tegner opp pegs
             if self.fill:
-                peg = pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
+                peg = pygame.Rect(((60*i)+20 , (60*row) +75), PEG_SIZE )
                 pygame.draw.rect(SCREEN, self.return_color(i), peg, width = 0, border_radius=15)
             else:
-                peg = pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
+                peg = pygame.Rect(((60*i)+20 , (60*row) +75), PEG_SIZE )
                 pygame.draw.rect(SCREEN, self.return_color(i), peg, width = 2, border_radius=15)
         
         for i in range(len(self.feedback)):             # Tegner opp fedback pegs basert på om den finnes
             if self.feedback[i] == 1:
-                feedback_peg = pygame.Rect((275+(30*i), row*60+30), FEEDBACK_PEG_SIZE)
+                feedback_peg = pygame.Rect((275+(30*i), row*60+85), FEEDBACK_PEG_SIZE)
                 pygame.draw.rect(SCREEN, BLACK, feedback_peg, border_radius=10)
             if self.feedback[i] == 2:
-                feedback_peg = pygame.Rect((275+(30*i), row*60+30), FEEDBACK_PEG_SIZE)
+                feedback_peg = pygame.Rect((275+(30*i), row*60+85), FEEDBACK_PEG_SIZE)
                 pygame.draw.rect(SCREEN, WHITE, feedback_peg, border_radius=10)
 
         if self.has_border:                             # Tegner opp hvit ramme rundt current_row
-            border= pygame.Rect(10,(60*row)+10,240,60)
+            border= pygame.Rect(10,(60*row)+65,240,60)
             pygame.draw.rect(SCREEN, WHITE, border, width = 1)
 
 
@@ -53,6 +53,11 @@ YELLOW = (255,255,0)
 
 COLORS = [BOARD_BG, BOARD_PEGHOLES, WHITE, BLACK, RED, GREEN, BLUE, PURPLE, YELLOW]
 
+# Text stuff
+pygame.font.init()
+TITLE_FONT = pygame.font.SysFont("Helvetica", 44)
+GAME_RULES_FONT = pygame.font.SysFont ("Helvetica", 12)
+
 
 # Global variables ::::::::::::::::::::::::::::::::::::::::::::
 
@@ -62,6 +67,7 @@ FEEDBACK_PEG_SIZE = (20,20)
 
 # Screen størrelse
 WIDTH, HEIGHT = 400, 800
+
 
 
 # Functions ::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -85,18 +91,32 @@ def draw_board_state(SCREEN, board):
     SCREEN.fill(BOARD_BG)               #Bakgrunnsfarge
     for i in range(10):
         board[i].draw(SCREEN, i)        #Hullene i brettet
+    title = TITLE_FONT.render("MASTER MIND", 1, BLACK)
+    SCREEN.blit(title, ((WIDTH//2 - title.get_width()//2) ,10))
+    hide_solution = pygame.Rect((10, HEIGHT-130), (240, 60))
+    pygame.draw.rect(SCREEN, BOARD_PEGHOLES,hide_solution)
+    rules = GAME_RULES_FONT.render("Find the hidden color combination!", 1, BLACK)
+    SCREEN.blit(rules,(10,HEIGHT-63))
+    rules_2 = GAME_RULES_FONT.render("Change the colors in the white square by clicking the circles", 1, BLACK)
+    SCREEN.blit(rules_2,(10,HEIGHT-48))
+    rules_3 = GAME_RULES_FONT.render("Press RETURN to check vs the solution and advance to next row", 1, BLACK)
+    SCREEN.blit(rules_3,(10,HEIGHT-33))
+    rules_4 = GAME_RULES_FONT.render("BLACK = one correct color and placement, WHITE = one correct color", 1, BLACK)
+    SCREEN.blit(rules_4,(10,HEIGHT-18))
+
 
 # Tegn opp løsningen   
 def draw_solution(SCREEN, solution):     
-     for i in range(4):
-            solution_peg = pygame.Rect((60*i+20, HEIGHT-80), PEG_SIZE )
-            pygame.draw.rect(SCREEN, solution.return_color(i), solution_peg, width = 0, border_radius=15)
+    for i in range(4):
+        solution_peg = pygame.Rect((60*i+20, HEIGHT-120), PEG_SIZE )
+        pygame.draw.rect(SCREEN, solution.return_color(i), solution_peg, width = 0, border_radius=15)
+    
 
-# Sjekke rom et hull på currrent row blir klikket og roterer fargen i såfall
+# Sjekker om et hull på currrent row blir klikket og roterer fargen i såfall
 def check_click(row, board):
     pegs= [0,0,0,0]
     for i in range(4):
-        pegs[i]= pygame.Rect(((60*i)+20 , (60*row) +20), PEG_SIZE )
+        pegs[i]= pygame.Rect(((60*i)+20 , (60*row) +75), PEG_SIZE )
         mouse_pos = pygame.mouse.get_pos()
         if pegs[i].collidepoint(mouse_pos) and pygame.mouse.get_pressed()[0]:
             old_color = board.return_color(i)
@@ -135,13 +155,6 @@ def check_row_fields(row, board, solution):
         checked_colors.append(color)
     for _ in range(white_pegs):
         board[row].feedback.append(2)
-
-    if board[row].feedback == [1,1,1,1]:
-        win() 
-       
-
-def win():
-    print("You made it")
     
 
 # Main program starts here :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -154,6 +167,7 @@ def main():
     # Den raden som spilleren er på
     current_row = 0
 
+    win = False
     board = game_setup()
     solution = solution_setup()        
     
@@ -167,11 +181,15 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    check_row_fields(current_row, board, solution)                                   
+                    check_row_fields(current_row, board, solution)
+                    if board[current_row].feedback==[1,1,1,1]:
+                        win = True                                   
                     current_row += 1 
 
         # Setter opp brettet
         draw_board_state(SCREEN, board)
+
+
 
         # Setter hvit ramme rundt current_row og fjerner på forrige
         board[current_row].has_border = True            
@@ -182,11 +200,15 @@ def main():
         check_click(current_row, board[current_row])
 
         # For testing, viser løsningen
+        if win==True:
+            draw_solution(SCREEN, solution)
+            input("Du vant! RETURN for å fortsette!")    
         
-        draw_solution(SCREEN, solution)
-        
-        
-        
+        if current_row==9:
+            draw_solution(SCREEN, solution)
+            input("Du tapte, synd!")
+
+
         # Oppdaterer skjermen
         pygame.display.flip() 
 
