@@ -1,12 +1,6 @@
-from ast import While
 import pygame
 import random
 import time
-
-# Things to do/figure out
-# 
-
-
 
 # Grid radene er hovedobjektene  i spilllet, spilleren vil interagere med en slik gjennom spillets gang...
 class Grid_Row():
@@ -45,12 +39,6 @@ class Grid_Row():
             pygame.draw.rect(SCREEN, WHITE, border, width = 1)
 
 
-
-
-
-
-
-
 # Colors
 BOARD_BG= (139,69,19) # Brown board background
 BOARD_PEGHOLES= (102,51,0)   # Darker brown for unused pegholes
@@ -76,8 +64,6 @@ FEEDBACK_PEG_SIZE = (20,20)
 WIDTH, HEIGHT = 400, 800
 
 
- 
-
 # Functions ::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 def game_setup():
@@ -96,21 +82,17 @@ def solution_setup():
 
 # Tegn opp brettet sin state
 def draw_board_state(SCREEN, board):
-        
-    # Bakgrunn og hull
-    SCREEN.fill(BOARD_BG)
+    SCREEN.fill(BOARD_BG)               #Bakgrunnsfarge
     for i in range(10):
-        board[i].draw(SCREEN, i)
+        board[i].draw(SCREEN, i)        #Hullene i brettet
 
-
-    
-def draw_solution(SCREEN, solution):
-     
+# Tegn opp løsningen   
+def draw_solution(SCREEN, solution):     
      for i in range(4):
             solution_peg = pygame.Rect((60*i+20, HEIGHT-80), PEG_SIZE )
             pygame.draw.rect(SCREEN, solution.return_color(i), solution_peg, width = 0, border_radius=15)
 
-
+# Sjekke rom et hull på currrent row blir klikket og roterer fargen i såfall
 def check_click(row, board):
     pegs= [0,0,0,0]
     for i in range(4):
