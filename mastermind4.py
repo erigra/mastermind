@@ -69,7 +69,6 @@ FEEDBACK_PEG_SIZE = (20,20)
 WIDTH, HEIGHT = 400, 800
 
 
-
 # Functions ::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 def game_setup():
@@ -84,18 +83,19 @@ def solution_setup():
     solution = Grid_Row()
     for i in range(4):
         solution.change_field_color(i, COLORS[random.randint(2,8)])
+    print(solution.fields)
     return solution
 
 # Tegn opp brettet sin state
 def draw_board_state(SCREEN, board):
     SCREEN.fill(BOARD_BG)               #Bakgrunnsfarge
     for i in range(10):
-        board[i].draw(SCREEN, i)        #Hullene i brettet
-    title = TITLE_FONT.render("MASTER MIND", 1, BLACK)
+        board[i].draw(SCREEN, i)        #Hullene/brikkene i brettet   
+    title = TITLE_FONT.render("MASTER MIND", 1, BLACK)              # Titteltekst
     SCREEN.blit(title, ((WIDTH//2 - title.get_width()//2) ,10))
-    hide_solution = pygame.Rect((10, HEIGHT-130), (240, 60))
+    hide_solution = pygame.Rect((10, HEIGHT-130), (240, 60))        # Løsningsboks
     pygame.draw.rect(SCREEN, BOARD_PEGHOLES,hide_solution)
-    rules = GAME_RULES_FONT.render("Find the hidden color combination!", 1, BLACK)
+    rules = GAME_RULES_FONT.render("Find the hidden color combination!", 1, BLACK)          # Reglertekst
     SCREEN.blit(rules,(10,HEIGHT-63))
     rules_2 = GAME_RULES_FONT.render("Change the colors in the white square by clicking the circles", 1, BLACK)
     SCREEN.blit(rules_2,(10,HEIGHT-48))
@@ -164,10 +164,8 @@ def main():
     pygame.display.set_caption("Mastermind")
     clock = pygame.time.Clock()
   
-    # Den raden som spilleren er på
+    # Nytt spill setup
     current_row = 0
-
-    win = False
     board = game_setup()
     solution = solution_setup()        
     
@@ -182,14 +180,26 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     check_row_fields(current_row, board, solution)
-                    if board[current_row].feedback==[1,1,1,1]:
-                        win = True                                   
+                    if board[current_row].feedback==[1,1,1,1]: 
+                        draw_board_state(SCREEN, board)                       
+                        draw_solution(SCREEN, solution)
+                        win_text=TITLE_FONT.render("You won!", 1, WHITE)          
+                        SCREEN.blit(win_text,((WIDTH//2-win_text.get_width()//2),(HEIGHT//2-win_text.get_width()//2)))
+                        pygame.display.flip()
+                        time.sleep(5)
+                        main()                                  
                     current_row += 1 
+                    if current_row==10:
+                        draw_board_state(SCREEN, board)
+                        draw_solution(SCREEN, solution)
+                        loose_text=TITLE_FONT.render("You lost!", 1, WHITE)          
+                        SCREEN.blit(loose_text,((WIDTH//2-loose_text.get_width()//2),(HEIGHT//2-loose_text.get_width()//2)))
+                        pygame.display.flip()
+                        time.sleep(5)
+                        main()
 
-        # Setter opp brettet
+        # Tegner opp brettet
         draw_board_state(SCREEN, board)
-
-
 
         # Setter hvit ramme rundt current_row og fjerner på forrige
         board[current_row].has_border = True            
@@ -198,16 +208,6 @@ def main():
         board[current_row].draw(SCREEN, current_row)    
 
         check_click(current_row, board[current_row])
-
-        # For testing, viser løsningen
-        if win==True:
-            draw_solution(SCREEN, solution)
-            input("Du vant! RETURN for å fortsette!")    
-        
-        if current_row==9:
-            draw_solution(SCREEN, solution)
-            input("Du tapte, synd!")
-
 
         # Oppdaterer skjermen
         pygame.display.flip() 
