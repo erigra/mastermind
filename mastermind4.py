@@ -83,7 +83,7 @@ def solution_setup():
     solution = Grid_Row()
     for i in range(4):
         solution.change_field_color(i, COLORS[random.randint(2,8)])
-    print(solution.fields)
+    # print(solution.fields)                                   --------------------- Kan aktiveres for testing
     return solution
 
 # Tegn opp brettet sin state
